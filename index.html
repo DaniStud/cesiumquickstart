@@ -40,23 +40,39 @@
     geocoder: Cesium.IonGeocodeProviderType.GOOGLE,
 });
 
-try {
-  const tileset = await Cesium.createGooglePhotorealistic3DTileset();
-  viewer.scene.primitives.add(tileset);
-} catch (error) {
-  console.log(`Failed to load tileset: ${error}`);
-}
+// try {
+//   const tileset = await Cesium.createGooglePhotorealistic3DTileset();
+//   viewer.scene.primitives.add(tileset);
+// } catch (error) {
+//   console.log(`Failed to load tileset: ${error}`);
+// }
 
     viewer.camera.flyTo({
-      destination: Cesium.Cartesian3.fromDegrees(13.3986, 52.5207, 50),
+      destination: Cesium.Cartesian3.fromDegrees(13.3986, 52.5207, 200),
       orientation: {
         heading: Cesium.Math.toRadians(0.0),
         pitch: Cesium.Math.toRadians(-15.0),
       }
     });
 
-    // const buildingTileset = await Cesium.createOsmBuildingsAsync();
-    // viewer.scene.primitives.add(buildingTileset);
+
+  const i = 0; // Define i with a value
+  const height = 100000.0 + 200000.0 * i;
+
+  const entities = viewer.entities; // Initialize entities from the viewer
+  entities.add({
+    position: Cesium.Cartesian3.fromDegrees(13.3986, 52.5207, 100),
+    box: {
+      dimensions: new Cesium.Cartesian3(90.0, 90.0, 90.0),
+      outline: true,
+      outlineColor: Cesium.Color.BLUE,
+      outlineWidth: 2,
+      material: Cesium.Color.BLUE.withAlpha(0.5),
+    },
+  });
+
+    const buildingTileset = await Cesium.createOsmBuildingsAsync();
+    viewer.scene.primitives.add(buildingTileset);
 
     let isPanningRight = false;
 

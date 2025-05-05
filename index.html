@@ -35,9 +35,17 @@
   <script type="module">
     Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzMzEzNjkyZC03NjRlLTRkNjItYTVjYi1lMDg2NGNkZmI1NDEiLCJpZCI6Mjk0MzQ2LCJpYXQiOjE3NDQ3MzExODZ9.3GD52Faq8qq6Z75FWZZcgejaYZgW7DKPAy0wJoooJUg';
 
-    const viewer = new Cesium.Viewer('cesiumContainer', {
-      terrain: Cesium.Terrain.fromWorldTerrain(),
-    });
+    const viewer = new Cesium.Viewer("cesiumContainer", {
+    globe: false,
+    geocoder: Cesium.IonGeocodeProviderType.GOOGLE,
+});
+
+try {
+  const tileset = await Cesium.createGooglePhotorealistic3DTileset();
+  viewer.scene.primitives.add(tileset);
+} catch (error) {
+  console.log(`Failed to load tileset: ${error}`);
+}
 
     viewer.camera.flyTo({
       destination: Cesium.Cartesian3.fromDegrees(13.3986, 52.5207, 50),
@@ -47,8 +55,8 @@
       }
     });
 
-    const buildingTileset = await Cesium.createOsmBuildingsAsync();
-    viewer.scene.primitives.add(buildingTileset);
+    // const buildingTileset = await Cesium.createOsmBuildingsAsync();
+    // viewer.scene.primitives.add(buildingTileset);
 
     let isPanningRight = false;
 

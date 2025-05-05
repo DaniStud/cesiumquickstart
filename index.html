@@ -63,7 +63,7 @@ try {
     viewer.scene.preRender.addEventListener(() => {
       if (isPanningRight) {
         const camera = viewer.camera;
-        const moveRate = 0.5; // adjust this for speed
+        const moveRate = 0.1; // adjust this for speed
         const direction = Cesium.Cartesian3.cross(camera.direction, camera.up, new Cesium.Cartesian3());
         Cesium.Cartesian3.normalize(direction, direction);
         Cesium.Cartesian3.multiplyByScalar(direction, moveRate, direction);

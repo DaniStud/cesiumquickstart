@@ -41,7 +41,7 @@ const loadTileset = async (viewer) => {
 };
 
 const setupInitialView = (viewer) => {
-  viewer.camera.flyTo({
+  viewer.camera.setView({
     destination: Cesium.Cartesian3.fromDegrees(13.399614, 52.517168, 130),
     orientation: {
       heading: Cesium.Math.toRadians(0.0),
@@ -65,23 +65,60 @@ const addBoxEntity = (viewer) => {
 
 const setupControls = (viewer) => {
   let isPanningRight = false;
+  let isPanningLeft = false;
+  let isPanningUp = false;
+  let isPanningDown = false;
+  let isPanningForward = false;
+  let isPanningBackward = false;
   const MOVE_RATE = 0.1;
-  
+
   const panHandler = () => {
-    if (!isPanningRight) return;
-    
     const { camera } = viewer;
-    const direction = Cesium.Cartesian3.cross(camera.direction, camera.up, new Cesium.Cartesian3());
-    Cesium.Cartesian3.normalize(direction, direction);
-    Cesium.Cartesian3.multiplyByScalar(direction, MOVE_RATE, direction);
-    camera.move(direction, 1);
+
+    if (isPanningRight) {
+      const direction = Cesium.Cartesian3.cross(camera.direction, camera.up, new Cesium.Cartesian3());
+      Cesium.Cartesian3.normalize(direction, direction);
+      Cesium.Cartesian3.multiplyByScalar(direction, MOVE_RATE, direction);
+      camera.move(direction, 1);
+    }
+
+    if (isPanningLeft) {
+      const direction = Cesium.Cartesian3.cross(camera.up, camera.direction, new Cesium.Cartesian3());
+      Cesium.Cartesian3.normalize(direction, direction);
+      Cesium.Cartesian3.multiplyByScalar(direction, MOVE_RATE, direction);
+      camera.move(direction, 1);
+    }
+
+    if (isPanningUp) {
+      const direction = Cesium.Cartesian3.clone(camera.up);
+      Cesium.Cartesian3.multiplyByScalar(direction, MOVE_RATE, direction);
+      camera.move(direction, 1);
+    }
+
+    if (isPanningDown) {
+      const direction = Cesium.Cartesian3.negate(camera.up, new Cesium.Cartesian3());
+      Cesium.Cartesian3.multiplyByScalar(direction, MOVE_RATE, direction);
+      camera.move(direction, 1);
+    }
+
+    if (isPanningForward) {
+      const direction = Cesium.Cartesian3.clone(camera.direction);
+      Cesium.Cartesian3.multiplyByScalar(direction, MOVE_RATE, direction);
+      camera.move(direction, 1);
+    }
+
+    if (isPanningBackward) {
+      const direction = Cesium.Cartesian3.negate(camera.direction, new Cesium.Cartesian3());
+      Cesium.Cartesian3.multiplyByScalar(direction, MOVE_RATE, direction);
+      camera.move(direction, 1);
+    }
   };
 
   const updateCameraInfo = () => {
     const { camera } = viewer;
     const pos = camera.positionWC;
     const carto = Cesium.Cartographic.fromCartesian(pos);
-    
+
     const lon = Cesium.Math.toDegrees(carto.longitude).toFixed(6);
     const lat = Cesium.Math.toDegrees(carto.latitude).toFixed(6);
     const height = carto.height.toFixed(2);
@@ -101,24 +138,45 @@ const setupControls = (viewer) => {
   };
 
   // Event handlers
-  const startPanning = () => { isPanningRight = true; };
-  const stopPanning = () => { isPanningRight = false; };
+  const startPanningRight = () => { stopAllPanning(); isPanningRight = true; };
+  const startPanningLeft = () => { stopAllPanning(); isPanningLeft = true; };
+  const startPanningUp = () => { stopAllPanning(); isPanningUp = true; };
+  const startPanningDown = () => { stopAllPanning(); isPanningDown = true; };
+  const startPanningForward = () => { stopAllPanning(); isPanningForward = true; };
+  const startPanningBackward = () => { stopAllPanning(); isPanningBackward = true; };
+
+  const stopAllPanning = () => {
+    isPanningRight = false;
+    isPanningLeft = false;
+    isPanningUp = false;
+    isPanningDown = false;
+    isPanningForward = false;
+    isPanningBackward = false;
+  };
 
   // Add event listeners
-  const panRightBtn = document.getElementById('panRight');
-  const stopPanBtn = document.getElementById('stopPan');
-  
-  panRightBtn.addEventListener('click', startPanning);
-  stopPanBtn.addEventListener('click', stopPanning);
-  
+  document.getElementById('panRight').addEventListener('mousedown', startPanningRight);
+  document.getElementById('panLeft').addEventListener('mousedown', startPanningLeft);
+  document.getElementById('panUp').addEventListener('mousedown', startPanningUp);
+  document.getElementById('panDown').addEventListener('mousedown', startPanningDown);
+  document.getElementById('panForward').addEventListener('mousedown', startPanningForward);
+  document.getElementById('panBackward').addEventListener('mousedown', startPanningBackward);
+  document.getElementById('stopPan').addEventListener('click', stopAllPanning);
+
   // Add scene event listeners
   const preRenderListener = viewer.scene.preRender.addEventListener(panHandler);
   const postRenderListener = viewer.scene.postRender.addEventListener(updateCameraInfo);
 
   // Return cleanup function
   return () => {
-    panRightBtn.removeEventListener('click', startPanning);
-    stopPanBtn.removeEventListener('click', stopPanning);
+    document.getElementById('panRight').removeEventListener('mousedown', startPanningRight);
+    document.getElementById('panLeft').removeEventListener('mousedown', startPanningLeft);
+    document.getElementById('panUp').removeEventListener('mousedown', startPanningUp);
+    document.getElementById('panDown').removeEventListener('mousedown', startPanningDown);
+    document.getElementById('panForward').removeEventListener('mousedown', startPanningForward);
+    document.getElementById('panBackward').removeEventListener('mousedown', startPanningBackward);
+    document.getElementById('stopPan').removeEventListener('click', stopAllPanning);
+
     preRenderListener();
     postRenderListener();
   };

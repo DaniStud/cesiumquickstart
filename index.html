@@ -4,38 +4,7 @@
   <meta charset="utf-8">
   <script src="https://cesium.com/downloads/cesiumjs/releases/1.129/Build/Cesium/Cesium.js"></script>
   <link href="https://cesium.com/downloads/cesiumjs/releases/1.129/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
-  <style>
-    #cesiumContainer {
-      width: 100vw;
-      height: 100vh;
-      display: block;
-    }
-    #controls {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      z-index: 10;
-      background: rgba(255, 255, 255, 0.8);
-      padding: 8px;
-      border-radius: 4px;
-    }
-    #cameraInfo {
-      position: absolute;
-      top: 100px;
-      right: 10px;
-      z-index: 10;
-      background: rgba(0, 0, 0, 0.6);
-      color: white;
-      padding: 8px 12px;
-      font-family: monospace;
-      font-size: 13px;
-      border-radius: 4px;
-      line-height: 1.4;
-    }
-    button {
-      margin-right: 5px;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
@@ -46,89 +15,6 @@
   </div>
   <div id="cameraInfo"></div>
 
-  <script type="module">
-    Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzMzEzNjkyZC03NjRlLTRkNjItYTVjYi1lMDg2NGNkZmI1NDEiLCJpZCI6Mjk0MzQ2LCJpYXQiOjE3NDQ3MzExODZ9.3GD52Faq8qq6Z75FWZZcgejaYZgW7DKPAy0wJoooJUg';
-
-    const viewer = new Cesium.Viewer("cesiumContainer", {
-      globe: false,
-      geocoder: Cesium.IonGeocodeProviderType.GOOGLE,
-    });
-
-    try {
-      const tileset = await Cesium.createGooglePhotorealistic3DTileset();
-      viewer.scene.primitives.add(tileset);
-    } catch (error) {
-      console.log(`Failed to load tileset: ${error}`);
-    }
-
-    viewer.camera.flyTo({
-      destination: Cesium.Cartesian3.fromDegrees(13.39879, 	52.51945, 200),
-      orientation: {
-        heading: Cesium.Math.toRadians(0.0),
-        pitch: Cesium.Math.toRadians(-15.0),
-      }
-    });
-
-    const i = 0;
-    const height = 100000.0 + 200000.0 * i;
-
-    viewer.entities.add({
-      position: Cesium.Cartesian3.fromDegrees(13.400985, 52.520560, 100),
-      box: {
-        dimensions: new Cesium.Cartesian3(9.0, 9.0, 9.0),
-        outline: true,
-        outlineColor: Cesium.Color.BLUE,
-        outlineWidth: 2,
-        material: Cesium.Color.BLUE.withAlpha(1),
-      },
-    });
-
-    // const buildingTileset = await Cesium.createOsmBuildingsAsync();
-    // viewer.scene.primitives.add(buildingTileset);
-
-    let isPanningRight = false;
-
-    viewer.scene.preRender.addEventListener(() => {
-      if (isPanningRight) {
-        const camera = viewer.camera;
-        const moveRate = 0.1;
-        const direction = Cesium.Cartesian3.cross(camera.direction, camera.up, new Cesium.Cartesian3());
-        Cesium.Cartesian3.normalize(direction, direction);
-        Cesium.Cartesian3.multiplyByScalar(direction, moveRate, direction);
-        camera.move(direction, 1);
-      }
-    });
-
-    document.getElementById('panRight').addEventListener('click', () => {
-      isPanningRight = true;
-    });
-
-    document.getElementById('stopPan').addEventListener('click', () => {
-      isPanningRight = false;
-    });
-
-    // Camera info display
-    const cameraInfoDiv = document.getElementById('cameraInfo');
-    viewer.scene.postRender.addEventListener(() => {
-      const pos = viewer.camera.positionWC;
-      const carto = Cesium.Cartographic.fromCartesian(pos);
-      const lon = Cesium.Math.toDegrees(carto.longitude).toFixed(6);
-      const lat = Cesium.Math.toDegrees(carto.latitude).toFixed(6);
-      const height = carto.height.toFixed(2);
-      const heading = Cesium.Math.toDegrees(viewer.camera.heading).toFixed(2);
-      const pitch = Cesium.Math.toDegrees(viewer.camera.pitch).toFixed(2);
-      const roll = Cesium.Math.toDegrees(viewer.camera.roll).toFixed(2);
-
-      cameraInfoDiv.innerHTML = `
-        <b>Camera:</b><br>
-        Lon: ${lon}°<br>
-        Lat: ${lat}°<br>
-        Height: ${height} m<br>
-        Heading: ${heading}°<br>
-        Pitch: ${pitch}°<br>
-        Roll: ${roll}°
-      `;
-    });
-  </script>
+<script src="main.js"></script>
 </body>
 </html>

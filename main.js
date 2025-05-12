@@ -52,7 +52,7 @@ const setupInitialView = (viewer) => {
 
 const addBoxEntity = (viewer) => {
   viewer.entities.add({
-    position: Cesium.Cartesian3.fromDegrees(13.400985, 52.520560, 100),
+    position: Cesium.Cartesian3.fromDegrees(13.399448, 52.518766, 50),
     box: {
       dimensions: new Cesium.Cartesian3(9.0, 9.0, 9.0),
       outline: true,

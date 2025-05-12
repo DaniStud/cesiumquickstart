@@ -17,11 +17,22 @@ const initializeCesium = async () => {
     // Setup initial view
     setupInitialView(viewer);
     
-    // Add entity
-    addBoxEntity(viewer);
+    // Add initial box entity
+    let currentEntity = addBoxEntity(viewer);
     
     // Setup controls and camera info
     const cleanup = setupControls(viewer);
+    
+    // Setup HMR for boxEntity.js
+    if (import.meta.hot) {
+      import.meta.hot.accept('./boxEntity.js', (newModule) => {
+        if (newModule) {
+          viewer.entities.remove(currentEntity);
+          currentEntity = newModule.addBoxEntity(viewer);
+          console.log('Box entity updated via HMR');
+        }
+      });
+    }
     
     // Return cleanup function for proper resource management
     return cleanup;
@@ -50,18 +61,8 @@ const setupInitialView = (viewer) => {
   });
 };
 
-const addBoxEntity = (viewer) => {
-  viewer.entities.add({
-    position: Cesium.Cartesian3.fromDegrees(13.399448, 52.518766, 80),
-    box: {
-      dimensions: new Cesium.Cartesian3(9.0, 9.0, 9.0),
-      outline: true,
-      outlineColor: Cesium.Color.BLUE,
-      outlineWidth: 2,
-      material: Cesium.Color.BLUE.withAlpha(1),
-    },
-  });
-};
+// Import addBoxEntity from separate file
+import { addBoxEntity } from './boxEntity.js';
 
 const setupControls = (viewer) => {
   let isPanningRight = false;

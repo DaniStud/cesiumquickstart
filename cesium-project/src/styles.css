@@ -28,3 +28,19 @@
     button {
       margin-right: 5px;
     }
+
+
+    #reloadEntity {
+  position: absolute;
+  top: 200px; /* Adjust to place below the #controls div */
+  left: 10px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+#reloadEntity:hover {
+  background: rgba(200, 200, 200, 0.8);
+}

@@ -12,22 +12,29 @@ export const addBoxEntity = (viewer) => {
 
   // Create a video element
   const videoElement = document.createElement('video');
-videoElement.src = '/band_seq_2.mp4'; // Path to the video in the public directory  videoElement.loop = true; // Optional: Loop the video
-  videoElement.muted = true; // Optional: Mute to avoid autoplay issues
-  videoElement.play(); // Start playing the video
+  videoElement.src = '/band_seq_2_web.webm'; // Path to the video
+  videoElement.loop = true;
+  videoElement.muted = true;
+
+  // Start playing the video and handle errors
+  videoElement.play().catch((error) => {
+    console.error("Video playback failed:", error);
+  });
+
+  // Use CallbackProperty to dynamically update the material's image
+  const dynamicImage = new Cesium.CallbackProperty(() => {
+    return videoElement; // Return the video element for each frame
+  }, false);
 
   return viewer.entities.add({
     position,
     orientation,
     box: {
       dimensions: new Cesium.Cartesian3(9.0, 9.0, 9.0),
-      outline: true,
-      outlineColor: Cesium.Color.BLUE,
-      outlineWidth: 2,
       material: new Cesium.ImageMaterialProperty({
-        image: videoElement, // Use the video element instead of an image
-        repeat: new Cesium.Cartesian2(1, 1), // Adjust tiling if needed
-        transparent: true, // Set to true if the video has transparency (e.g., WebM with alpha)
+        image: dynamicImage, // Use dynamicImage for video
+        repeat: new Cesium.Cartesian2(1, 1),
+        transparent: false, // Set to false to remove transparency
       }),
     },
   });
